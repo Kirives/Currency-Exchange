@@ -1,16 +1,18 @@
 package com.vsrka.exchange.exchangeRates;
 import com.vsrka.exchange.currencies.Currency;
 
-public class Rate {
-    int id;
+public class PairExchange {
     Currency baseCurrency;
     Currency targetCurrency;
     double rate;
+    double amount;
+    double convertedAmount;
 
-    public Rate(int id, Currency baseCurrency, Currency targetCurrency, double rate) {
-        this.id = id;
+    public PairExchange(Currency baseCurrency, Currency targetCurrency, double rate, double amount) {
         this.baseCurrency = baseCurrency;
         this.targetCurrency = targetCurrency;
         this.rate = rate;
+        this.amount = amount;
+        this.convertedAmount = amount * rate;
     }
 }
