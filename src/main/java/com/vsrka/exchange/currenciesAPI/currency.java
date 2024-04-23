@@ -19,10 +19,9 @@ public class currency extends HttpServlet {
         GetCurrencies getCurrencies = new GetCurrencies();
         String url = request.getRequestURL().toString();
         String [] words = url.split("/");
-
-        out.println("<html>");
         objectMapper.writeValue(out, getCurrencies.getCurrency(words[words.length-1]));
-        out.println("</html>");
+        getCurrencies.closeConnection();
+        out.close();
 
     }
 

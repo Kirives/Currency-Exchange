@@ -17,23 +17,16 @@ import java.util.List;
 
 import com.vsrka.exchange.connectDB.*;
 
-
-
-
-
 @WebServlet(name = "currencies", value = "/currencies")
 public class currencies extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
         PrintWriter out = response.getWriter();
         ObjectMapper objectMapper = new ObjectMapper();
         GetCurrencies getCurrencies = new GetCurrencies();
-        out.println("<html>");
         objectMapper.writeValue(out, getCurrencies.getCurrencies());//Если не выводит, то нажо сделать геттер
-        out.println("</html>");
+        getCurrencies.closeConnection();
         out.close();
-
     }
 
     @Override

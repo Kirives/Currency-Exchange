@@ -13,4 +13,20 @@ public class Rate {
         this.targetCurrency = targetCurrency;
         this.rate = rate;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public double getRate() {
+        return rate;
+    }
+
+    public Currency getTargetCurrency() {
+        return targetCurrency;
+    }
+
+    public Currency getBaseCurrency() {
+        return baseCurrency;
+    }
 }
