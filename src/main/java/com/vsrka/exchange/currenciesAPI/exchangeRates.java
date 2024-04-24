@@ -1,6 +1,7 @@
 package com.vsrka.exchange.currenciesAPI;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vsrka.exchange.connectDB.PostCurrencies;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -13,7 +14,6 @@ import com.vsrka.exchange.connectDB.GetCurrencies;
 public class exchangeRates extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
         ObjectMapper objectMapper = new ObjectMapper();
         PrintWriter out = response.getWriter();
         GetCurrencies getCurrencies = new GetCurrencies();
@@ -24,6 +24,11 @@ public class exchangeRates extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        PrintWriter out = response.getWriter();
+        PostCurrencies postCurrencies = new PostCurrencies();
+        objectMapper.writeValue(out, postCurrencies.postRate(request.getParameter("baseCurrencyCode"), request.getParameter("targetCurrencyCode"), request.getParameter("rate")));
+
 
     }
 }

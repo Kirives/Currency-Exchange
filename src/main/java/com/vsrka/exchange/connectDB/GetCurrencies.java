@@ -109,9 +109,8 @@ public class GetCurrencies {
         GetCurrencies currencies = new GetCurrencies();
         Currency currency1 = currencies.getCurrency(code1);
         Currency currency2 = currencies.getCurrency(code2);
-        //currencies.closeConnection();
         if (currency1 != null && currency2 != null) {
-            closeConnection();
+            //closeConnection();
             Rate rate = currencies.getExchangeRatePairFromID(currency1, currency2);
             currencies.closeConnection();
             return rate;

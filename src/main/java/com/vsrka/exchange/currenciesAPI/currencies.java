@@ -35,7 +35,6 @@ public class currencies extends HttpServlet {
         ObjectMapper objectMapper = new ObjectMapper();
         PostCurrencies postCurrencies = new PostCurrencies();
         GetCurrencies getCurrencies = new GetCurrencies();
-        postCurrencies.postCurrencies(request.getParameter("code").toString(),request.getParameter("name").toString(),request.getParameter("number").toString());
-        objectMapper.writeValue(out, getCurrencies.getCurrency(request.getParameter("code").toString()));
+        objectMapper.writeValue(out, postCurrencies.postCurrencies(request.getParameter("code").toString(),request.getParameter("name").toString(),request.getParameter("number").toString()));
     }
 }

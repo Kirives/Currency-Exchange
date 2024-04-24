@@ -1,5 +1,8 @@
 package com.vsrka.exchange.connectDB;
 
+import com.vsrka.exchange.currencies.Currency;
+import com.vsrka.exchange.exchangeRates.Rate;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
@@ -29,17 +32,42 @@ public class PostCurrencies {
         }
     }
 
-    public void postCurrencies(String code,String name,String number) {
-
+    public Currency postCurrencies(String code,String name,String number) {
         GetCurrencies getCurrencies = new GetCurrencies();
         if(getCurrencies.getCurrency(code)==null){
-            String quary = "INSERT INTO Currencies (Code, FullName, Number) values (\""+code+"\", \""+name+"\", \""+number+"\")";
+            String query = "INSERT INTO Currencies (Code, FullName, Number) values (\""+code+"\", \""+name+"\", \""+number+"\")";
             try {
-                statement.executeUpdate(quary);
+                statement.executeUpdate(query);
+                Currency currency = getCurrencies.getCurrency(code);
+                getCurrencies.closeConnection();
+                return currency;
             }catch (Exception e){
                 e.printStackTrace();
             }
         }
-        System.out.println(name+" "+code+" "+number);
+        getCurrencies.closeConnection();
+        return null;
+    }
+
+    public Rate postRate(String code1,String code2,String rate) {
+        GetCurrencies getCurrencies = new GetCurrencies();
+        if(getCurrencies.getExchangeRatePair(code1,code2)==null){
+            Currency currency1 = getCurrencies.getCurrency(code1);
+            Currency currency2 = getCurrencies.getCurrency(code2);
+            if(currency1!=null && currency2!=null){
+                String query = "INSERT INTO testjava.ExchangeRates(BaseCurrencyId, TargetCurrencyId, Rate) VALUES (\""+currency1.getId()+"\", \""+currency2.getId()+"\", \""+rate+"\")" ;
+                try {
+                    statement.executeUpdate(query);
+                    Rate ratecurr=getCurrencies.getExchangeRatePair(code1,code2);
+                    getCurrencies.closeConnection();
+                    return ratecurr;
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+        }
+        getCurrencies.closeConnection();
+        return null;
     }
 }
