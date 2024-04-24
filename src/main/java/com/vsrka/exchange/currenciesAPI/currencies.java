@@ -31,6 +31,11 @@ public class currencies extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // TODO: implement doPost method
+        PrintWriter out = response.getWriter();
+        ObjectMapper objectMapper = new ObjectMapper();
+        PostCurrencies postCurrencies = new PostCurrencies();
+        GetCurrencies getCurrencies = new GetCurrencies();
+        postCurrencies.postCurrencies(request.getParameter("code").toString(),request.getParameter("name").toString(),request.getParameter("number").toString());
+        objectMapper.writeValue(out, getCurrencies.getCurrency(request.getParameter("code").toString()));
     }
 }
