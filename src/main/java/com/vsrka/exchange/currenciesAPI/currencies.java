@@ -16,6 +16,8 @@ import java.sql.Statement;
 import java.util.List;
 
 import com.vsrka.exchange.connectDB.*;
+import static jakarta.servlet.http.HttpServletResponse.*;
+import com.vsrka.exchange.errors.Error;
 
 @WebServlet(name = "currencies", value = "/currencies")
 public class currencies extends HttpServlet {
@@ -24,7 +26,13 @@ public class currencies extends HttpServlet {
         PrintWriter out = response.getWriter();
         ObjectMapper objectMapper = new ObjectMapper();
         GetCurrencies getCurrencies = new GetCurrencies();
-        objectMapper.writeValue(out, getCurrencies.getCurrencies());//Если не выводит, то нажо сделать геттер
+        try {
+            response.setStatus(SC_OK);
+            objectMapper.writeValue(out, getCurrencies.getCurrencies());
+        }catch (Exception e) {
+            response.setStatus(SC_INTERNAL_SERVER_ERROR);
+            objectMapper.writeValue(out, new Error(SC_INTERNAL_SERVER_ERROR,"The database is not responding"));
+        }
         getCurrencies.closeConnection();
         out.close();
     }
@@ -34,7 +42,23 @@ public class currencies extends HttpServlet {
         PrintWriter out = response.getWriter();
         ObjectMapper objectMapper = new ObjectMapper();
         PostCurrencies postCurrencies = new PostCurrencies();
-        GetCurrencies getCurrencies = new GetCurrencies();
-        objectMapper.writeValue(out, postCurrencies.postCurrencies(request.getParameter("code").toString(),request.getParameter("name").toString(),request.getParameter("number").toString()));
+        String code = request.getParameter("code");
+        String name = request.getParameter("name");
+        String number = request.getParameter("number");
+
+        if(code==null||name==null||number==null){
+            response.setStatus(SC_BAD_REQUEST);
+            objectMapper.writeValue(out, new Error(SC_BAD_REQUEST,"The request body is missing"));
+            return;
+        }
+
+        Object result = postCurrencies.postCurrencies(request.getParameter("code").toString(),request.getParameter("name").toString(),request.getParameter("number").toString());
+        if(result instanceof Error){
+            response.setStatus(((Error) result).getErrorCode());
+            objectMapper.writeValue(out, result);
+        }else{
+            response.setStatus(SC_CREATED);
+            objectMapper.writeValue(out,result);
+        }
     }
 }

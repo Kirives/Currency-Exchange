@@ -1,9 +1,6 @@
 package com.vsrka.exchange.connectDB;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,21 +32,16 @@ public class GetCurrencies {
         }
     }
 
-    public List<Currency> getCurrencies() {
+    public List<Currency> getCurrencies() throws SQLException {
 
         String query = "SELECT * FROM testjava.Currencies";
-        try {
-            ResultSet rs = statement.executeQuery(query);
-            List<Currency> currencies = new ArrayList<>();
-            while (rs.next()) {
-                Currency currency = new Currency(rs.getInt("ID"), rs.getString("Code"), rs.getString("FullName"), rs.getString("Number"));
-                currencies.add(currency);
-            }
-            return currencies;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        ResultSet rs = statement.executeQuery(query);
+        List<Currency> currencies = new ArrayList<>();
+        while (rs.next()) {
+            Currency currency = new Currency(rs.getInt("ID"), rs.getString("Code"), rs.getString("FullName"), rs.getString("Number"));
+            currencies.add(currency);
         }
+        return currencies;
     }
 
     public Currency getCurrency(String code) {

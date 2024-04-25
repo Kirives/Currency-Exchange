@@ -15,4 +15,25 @@ public class PairExchange {
         this.amount = amount;
         this.convertedAmount = amount * rate;
     }
+
+    public Currency getBaseCurrency() {
+        return baseCurrency;
+    }
+
+    public Currency getTargetCurrency() {
+        return targetCurrency;
+    }
+
+    public double getRate() {
+        return rate;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public double getConvertedAmount() {
+        return convertedAmount;
+    }
+    //public PairExchange(Currency baseCurrency, Currency targetCurrency, double rate) {}
 }
