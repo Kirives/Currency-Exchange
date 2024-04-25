@@ -46,19 +46,25 @@ public class currencies extends HttpServlet {
         String name = request.getParameter("name");
         String number = request.getParameter("number");
 
+        //Пробую разные методы отлова ошибок, ещё не знаю какие лучше
         if(code==null||name==null||number==null){
             response.setStatus(SC_BAD_REQUEST);
             objectMapper.writeValue(out, new Error(SC_BAD_REQUEST,"The request body is missing"));
-            return;
-        }
-
-        Object result = postCurrencies.postCurrencies(request.getParameter("code").toString(),request.getParameter("name").toString(),request.getParameter("number").toString());
-        if(result instanceof Error){
-            response.setStatus(((Error) result).getErrorCode());
-            objectMapper.writeValue(out, result);
         }else{
-            response.setStatus(SC_CREATED);
-            objectMapper.writeValue(out,result);
+            try {
+                Currency currency = postCurrencies.postCurrenciesv2(request.getParameter("code").toString(),request.getParameter("name").toString(),request.getParameter("number").toString());
+                response.setStatus(SC_CREATED);
+                objectMapper.writeValue(out, currency);
+            }catch (Exception e) {
+                if (e.getMessage().equals("Currency with this code already exists")){
+                    response.setStatus(SC_CONFLICT);
+                    objectMapper.writeValue(out, new Error(SC_CONFLICT,"Currency with this code already exists"));
+                }else{
+                    response.setStatus(SC_INTERNAL_SERVER_ERROR);
+                    objectMapper.writeValue(out, new Error(SC_INTERNAL_SERVER_ERROR,"The database is not responding"));
+                }
+            }
         }
+        out.close();
     }
 }

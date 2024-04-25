@@ -37,7 +37,23 @@ public class PostCurrencies {
         }
     }
 
-    public Object postCurrencies(String code, String name, String number) {
+    //Оставю как пример для учёбы
+//    public Object postCurrencies(String code, String name, String number) {
+//        GetCurrencies getCurrencies = new GetCurrencies();
+//        String query = "INSERT INTO Currencies (Code, FullName, Number) values (\"" + code + "\", \"" + name + "\", \"" + number + "\")";
+//        try {
+//            statement.executeUpdate(query);
+//            Currency currency = getCurrencies.getCurrency(code);
+//            getCurrencies.closeConnection();
+//            return currency;
+//        } catch (SQLException ex) {
+//            return new Error(SC_CONFLICT,"Currency with this code already exists");
+//        }catch (Exception e){
+//            return new Error(SC_INTERNAL_SERVER_ERROR,"The database is not responding");
+//        }
+//    }
+
+    public Currency postCurrenciesv2(String code, String name, String number) throws Exception {
         GetCurrencies getCurrencies = new GetCurrencies();
         String query = "INSERT INTO Currencies (Code, FullName, Number) values (\"" + code + "\", \"" + name + "\", \"" + number + "\")";
         try {
@@ -46,9 +62,9 @@ public class PostCurrencies {
             getCurrencies.closeConnection();
             return currency;
         } catch (SQLException ex) {
-            return new Error(SC_CONFLICT,"Currency with this code already exists");
-        }catch (Exception e){
-            return new Error(SC_INTERNAL_SERVER_ERROR,"The database is not responding");
+            throw new Exception("Currency with this code already exists",ex);
+        }catch (Exception ex){
+            throw new Exception("The database is not responding",ex);
         }
     }
 

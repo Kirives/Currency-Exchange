@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import com.vsrka.exchange.connectDB.GetCurrencies;
+import com.vsrka.exchange.errors.Error;
+import static jakarta.servlet.http.HttpServletResponse.*;
+
 
 @WebServlet(name = "currency", value = "/currency/*")
 public class currency extends HttpServlet {
@@ -19,8 +22,16 @@ public class currency extends HttpServlet {
         GetCurrencies getCurrencies = new GetCurrencies();
         String url = request.getRequestURL().toString();
         String [] words = url.split("/");
-        objectMapper.writeValue(out, getCurrencies.getCurrency(words[words.length-1]));
-        getCurrencies.closeConnection();
+
+        if(words[words.length-1].equals("currency")){
+            response.setStatus(SC_BAD_REQUEST);
+            objectMapper.writeValue(out,new Error(SC_BAD_REQUEST,"Currency for the search is not specified"));
+        }else{
+            Object result =getCurrencies.getCurrency(words[words.length-1]);
+            objectMapper.writeValue(out, getCurrencies.getCurrency(words[words.length-1]));
+            getCurrencies.closeConnection();
+        }
+
         out.close();
 
     }
