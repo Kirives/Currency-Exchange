@@ -35,16 +35,25 @@ public class exchangeRatePair extends HttpServlet {
         String pair = words[words.length - 1];
         String firstCurr="";
         String secondCurr=pair;
-        for(char ch : pair.toCharArray()) {
-            firstCurr+=ch;
-            secondCurr=secondCurr.substring(1);
-            Rate rate = getCurrencies.getExchangeRatePair(firstCurr,secondCurr);
-            if(rate!=null) {
-                getCurrencies.closeConnection();
-                objectMapper.writeValue(out, rate);
-                break;
+
+        try {
+            for(char ch : pair.toCharArray()) {
+                firstCurr+=ch;
+                secondCurr=secondCurr.substring(1);
+                Rate rate = getCurrencies.getExchangeRatePair(firstCurr,secondCurr);
+                if(rate!=null) {
+                    getCurrencies.closeConnection();
+                    objectMapper.writeValue(out, rate);
+                    break;
+                }
             }
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
+
+
+
         getCurrencies.closeConnection();
 
 
@@ -68,15 +77,23 @@ public class exchangeRatePair extends HttpServlet {
         String rateParametr = request.getReader().readLine();
         if(rateParametr.contains("rate")){
             String rate = rateParametr.substring(5);
-            for(char ch : pair.toCharArray()) {
-                firstCurr+=ch;
-                secondCurr=secondCurr.substring(1);
-                Rate rateCurr = patchExhange.updateRate(firstCurr,secondCurr,rate);
-                if(rateCurr!=null) {
-                    objectMapper.writeValue(out,rateCurr);
-                    return;
+
+            try {
+                for(char ch : pair.toCharArray()) {
+                    firstCurr+=ch;
+                    secondCurr=secondCurr.substring(1);
+                    Rate rateCurr = patchExhange.updateRate(firstCurr,secondCurr,rate);
+                    if(rateCurr!=null) {
+                        objectMapper.writeValue(out,rateCurr);
+                        return;
+                    }
                 }
+            }catch (Exception e){
+                e.printStackTrace();
             }
+
+
+
             objectMapper.writeValue(out,"No pair found");
         }else{
             objectMapper.writeValue(out,"No rates found");

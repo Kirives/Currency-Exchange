@@ -68,25 +68,34 @@ public class PostCurrencies {
         }
     }
 
-    public Rate postRate(String code1, String code2, String rate) {
+    public Rate postRate(String code1, String code2, String rate) throws Exception {
         GetCurrencies getCurrencies = new GetCurrencies();
-        if (getCurrencies.getExchangeRatePair(code1, code2) == null) {
-            Currency currency1 = getCurrencies.getCurrency(code1);
-            Currency currency2 = getCurrencies.getCurrency(code2);
-            if (currency1 != null && currency2 != null) {
-                String query = "INSERT INTO testjava.ExchangeRates(BaseCurrencyId, TargetCurrencyId, Rate) VALUES (\"" + currency1.getId() + "\", \"" + currency2.getId() + "\", \"" + rate + "\")";
-                try {
-                    statement.executeUpdate(query);
-                    Rate ratecurr = getCurrencies.getExchangeRatePair(code1, code2);
-                    getCurrencies.closeConnection();
-                    return ratecurr;
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
 
+        Currency currency1 = getCurrencies.getCurrency(code1);
+        Currency currency2 = getCurrencies.getCurrency(code2);
+
+
+        if (currency1 != null && currency2 != null) {
+            String query = "INSERT INTO testjava.ExchangeRates(BaseCurrencyId, TargetCurrencyId, Rate) VALUES (\"" + currency1.getId() + "\", \"" + currency2.getId() + "\", \"" + rate + "\")";
+            try {
+                statement.executeUpdate(query);
+                Rate rateCurr = getCurrencies.getExchangeRatePair(code1, code2);
+                getCurrencies.closeConnection();
+                return rateCurr;
+            } catch (SQLException e) {
+                throw new Exception("A currency pair with this code already exists",e);
+            }catch (Exception e){
+                throw new Exception("The database is not responding",e);
+            }
+        }else {
+            throw new Exception("One (or both) currencies from a currency pair do not exist in the database");
         }
-        getCurrencies.closeConnection();
-        return null;
+
+
+
     }
+
+
+
+
 }

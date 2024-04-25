@@ -1,6 +1,7 @@
 package com.vsrka.exchange.currenciesAPI;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vsrka.exchange.currencies.Currency;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -27,13 +28,21 @@ public class currency extends HttpServlet {
             response.setStatus(SC_BAD_REQUEST);
             objectMapper.writeValue(out,new Error(SC_BAD_REQUEST,"Currency for the search is not specified"));
         }else{
-            Object result =getCurrencies.getCurrency(words[words.length-1]);
-            objectMapper.writeValue(out, getCurrencies.getCurrency(words[words.length-1]));
+            try {
+                Currency currency= getCurrencies.getCurrency(words[words.length-1]);
+                if(currency != null){
+                    response.setStatus(SC_OK);
+                    objectMapper.writeValue(out,currency);
+                }else{
+                    response.setStatus(SC_NOT_FOUND);
+                    objectMapper.writeValue(out,new Error(SC_NOT_FOUND,"Currency is not in the database"));
+                }
+            }catch (Exception e){
+                objectMapper.writeValue(out,new Error(SC_INTERNAL_SERVER_ERROR,"The database is not responding"));
+            }
             getCurrencies.closeConnection();
         }
-
         out.close();
-
     }
 
     @Override

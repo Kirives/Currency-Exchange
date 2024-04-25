@@ -27,7 +27,7 @@ public class PatchExhange {
         }
     }
 
-    public Rate updateRate(String code1,String code2, String rate){
+    public Rate updateRate(String code1,String code2, String rate) throws Exception{
         GetCurrencies getCurrencies = new GetCurrencies();
         Rate currRate = getCurrencies.getExchangeRatePair(code1,code2);
         if(currRate!=null){

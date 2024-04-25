@@ -44,7 +44,7 @@ public class GetCurrencies {
         return currencies;
     }
 
-    public Currency getCurrency(String code) {
+    public Currency getCurrency(String code) throws Exception{
         String query = "SELECT * FROM testjava.Currencies WHERE Code = \"" + code + "\"";
         try {
             ResultSet rs = statement.executeQuery(query);
@@ -52,10 +52,10 @@ public class GetCurrencies {
                 System.out.println(rs.getInt("ID"));
                 return new Currency(rs.getInt("ID"), rs.getString("Code"), rs.getString("FullName"), rs.getString("Number"));
             }
+            //нуль нормально, поом отдадим 404 ошибку
             return null;
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            throw new Exception("The database is not responding",e);
         }
     }
 
@@ -73,7 +73,7 @@ public class GetCurrencies {
         return null;
     }
 
-    public List<Rate> getExchangeRates() {
+    public List<Rate> getExchangeRates() throws Exception {
         String query = "SELECT * FROM testjava.ExchangeRates";
         try {
             ResultSet rs = statement.executeQuery(query);
@@ -92,12 +92,11 @@ public class GetCurrencies {
             currencies.closeConnection();
             return rates;
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new Exception("The database is not responding",e);
         }
-        return null;
     }
 
-    public Rate getExchangeRatePair(String code1, String code2) {
+    public Rate getExchangeRatePair(String code1, String code2) throws Exception {
         GetCurrencies currencies = new GetCurrencies();
         Currency currency1 = currencies.getCurrency(code1);
         Currency currency2 = currencies.getCurrency(code2);

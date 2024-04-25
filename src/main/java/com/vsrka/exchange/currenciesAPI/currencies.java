@@ -46,7 +46,6 @@ public class currencies extends HttpServlet {
         String name = request.getParameter("name");
         String number = request.getParameter("number");
 
-        //Пробую разные методы отлова ошибок, ещё не знаю какие лучше
         if(code==null||name==null||number==null){
             response.setStatus(SC_BAD_REQUEST);
             objectMapper.writeValue(out, new Error(SC_BAD_REQUEST,"The request body is missing"));
