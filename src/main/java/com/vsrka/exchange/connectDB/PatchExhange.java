@@ -2,6 +2,7 @@ package com.vsrka.exchange.connectDB;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import com.vsrka.exchange.currencies.Currency;
@@ -27,19 +28,25 @@ public class PatchExhange {
         }
     }
 
-    public Rate updateRate(String code1,String code2, String rate) throws Exception{
+    public Rate updateRate(String code1, String code2, String rate) throws Exception {
         GetCurrencies getCurrencies = new GetCurrencies();
-        Rate currRate = getCurrencies.getExchangeRatePair(code1,code2);
-        if(currRate!=null){
-            String query ="UPDATE testjava.ExchangeRates SET Rate="+rate+" WHERE ID="+currRate.getId();
+        Rate currRate = getCurrencies.getExchangeRatePair(code1, code2);
+
+        if(currRate != null) {
+            String query = "UPDATE testjava.ExchangeRates SET Rate=" + rate + " WHERE ID=" + currRate.getId();
             try {
                 statement.executeUpdate(query);
-                return getCurrencies.getExchangeRatePair(code1,code2);
+                return getCurrencies.getExchangeRatePair(code1, code2);
+            } catch (SQLException e) {
+                throw new Exception("Exchange rate for the pair was not found",e);
             }catch (Exception e) {
-                e.printStackTrace();
+                throw new Exception("The database is not responding",e);
             }
+        }else{
+            return null;
         }
-        return null;
+
+
     }
 
 }

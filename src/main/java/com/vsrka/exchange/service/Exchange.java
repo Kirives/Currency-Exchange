@@ -3,12 +3,13 @@ package com.vsrka.exchange.service;
 import com.vsrka.exchange.exchangeRates.*;
 import com.vsrka.exchange.connectDB.GetCurrencies;
 
+import java.sql.SQLException;
+
 public class Exchange {
 
-    public PairExchange getExchange(String baseCurrency,String targetCurrency,String amountString ) {
+    public PairExchange getExchange(String baseCurrency,String targetCurrency,String amountString ) throws Exception {
         int amount = Integer.parseInt(amountString);
         GetCurrencies getCurrencies = new GetCurrencies();
-
 
         try {
             Rate rateCurr = getCurrencies.getExchangeRatePair(baseCurrency,targetCurrency);
@@ -35,17 +36,13 @@ public class Exchange {
                 getCurrencies.closeConnection();
                 return pairExchange;
             }
+        }catch (SQLException e) {
+            throw new Exception("Exchange rate for the pair was not found",e);
         }catch (Exception e) {
-            e.printStackTrace();
+            throw new Exception("The database is not responding",e);
         }
 
-
-
-
-        return null;
-
+        //return null;
 
     }
-
-
 }
