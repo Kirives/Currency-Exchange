@@ -3,6 +3,9 @@ package com.vsrka.exchange.connectDB;
 import com.vsrka.exchange.currencies.Currency;
 import com.vsrka.exchange.exchangeRates.Rate;
 
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -19,21 +22,24 @@ public class PostCurrencies {
     final String password = "1133Ov..";
     Statement statement = null;
     Connection connection;
+    private final String driverName = "org.sqlite.JDBC";
 
     public PostCurrencies() {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
-            System.out.println("Connection succesfull!");
-        } catch (Exception ex) {
-            System.out.println("Connection failed...");
-
-            System.out.println(ex);
-        }
-        try {
-            connection = DriverManager.getConnection(url, user, password);
+            URL resource = PostCurrencies.class.getClassLoader().getResource("servlet.db");
+            String path = null;
+            try {
+                path = new File(resource.toURI()).getAbsolutePath();
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+            Class.forName(driverName);
+            connection = DriverManager.getConnection(String.format("jdbc:sqlite:%s", path));
             statement = connection.createStatement();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -76,7 +82,7 @@ public class PostCurrencies {
 
 
         if (currency1 != null && currency2 != null) {
-            String query = "INSERT INTO testjava.ExchangeRates(BaseCurrencyId, TargetCurrencyId, Rate) VALUES (\"" + currency1.getId() + "\", \"" + currency2.getId() + "\", \"" + rate + "\")";
+            String query = "INSERT INTO ExchangeRates(BaseCurrencyId, TargetCurrencyId, Rate) VALUES (\"" + currency1.getId() + "\", \"" + currency2.getId() + "\", \"" + rate + "\")";
             try {
                 statement.executeUpdate(query);
                 Rate rateCurr = getCurrencies.getExchangeRatePair(code1, code2);

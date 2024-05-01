@@ -1,5 +1,8 @@
 package com.vsrka.exchange.connectDB;
 
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,27 +17,30 @@ public class GetCurrencies {
     final String password = "1133Ov..";
     Statement statement = null;
     Connection connection;
+    private final String driverName = "org.sqlite.JDBC";
 
     public GetCurrencies() {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver").getDeclaredConstructor().newInstance();
-            System.out.println("Connection succesfull!");
-        } catch (Exception ex) {
-            System.out.println("Connection failed...");
-
-            System.out.println(ex);
-        }
-        try {
-            connection = DriverManager.getConnection(url, user, password);
+            URL resource = GetCurrencies.class.getClassLoader().getResource("servlet.db");
+            String path = null;
+            try {
+                path = new File(resource.toURI()).getAbsolutePath();
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+            Class.forName(driverName);
+            connection = DriverManager.getConnection(String.format("jdbc:sqlite:%s", path));
             statement = connection.createStatement();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
 
     public List<Currency> getCurrencies() throws SQLException {
 
-        String query = "SELECT * FROM testjava.Currencies";
+        String query = "SELECT * FROM Currencies";
         ResultSet rs = statement.executeQuery(query);
         List<Currency> currencies = new ArrayList<>();
         while (rs.next()) {
@@ -45,7 +51,7 @@ public class GetCurrencies {
     }
 
     public Currency getCurrency(String code) throws Exception{
-        String query = "SELECT * FROM testjava.Currencies WHERE Code = \"" + code + "\"";
+        String query = "SELECT * FROM Currencies WHERE Code = \"" + code + "\"";
         try {
             ResultSet rs = statement.executeQuery(query);
             if (rs.next()) {
@@ -60,7 +66,7 @@ public class GetCurrencies {
     }
 
     private Currency getCurrencyFromID(int id) {
-        String query = "SELECT * FROM testjava.Currencies WHERE ID = " + id;
+        String query = "SELECT * FROM Currencies WHERE ID = " + id;
         try {
             ResultSet rs = statement.executeQuery(query);
             if (rs.next()) {
@@ -74,7 +80,7 @@ public class GetCurrencies {
     }
 
     public List<Rate> getExchangeRates() throws Exception {
-        String query = "SELECT * FROM testjava.ExchangeRates";
+        String query = "SELECT * FROM ExchangeRates";
         try {
             ResultSet rs = statement.executeQuery(query);
             List<Rate> rates = new ArrayList<>();
@@ -116,7 +122,7 @@ public class GetCurrencies {
     }
 
     private Rate getExchangeRatePairFromID(Currency currency1, Currency currency2) {
-        String query = "SELECT * FROM testjava.ExchangeRates WHERE BaseCurrencyId = " + currency1.getId() + " AND TargetCurrencyId = " + currency2.getId();
+        String query = "SELECT * FROM ExchangeRates WHERE BaseCurrencyId = " + currency1.getId() + " AND TargetCurrencyId = " + currency2.getId();
         try {
             ResultSet rs = statement.executeQuery(query);
             if (rs.next()) {
